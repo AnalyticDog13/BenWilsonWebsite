@@ -98,3 +98,43 @@ function initLightbox() {
 }
 
 document.addEventListener('DOMContentLoaded', initLightbox);
+
+// ── Guest Gate ────────────────────────────────────────────────────────────────
+function initGuestGate() {
+  var gate = document.getElementById('guestGate');
+  if (!gate) return;
+
+  var key = 'guestUnlocked' + location.pathname;
+  if (sessionStorage.getItem(key)) { gate.remove(); return; }
+
+  // Inject back button
+  var backBtn = document.createElement('button');
+  backBtn.className = 'guest-gate-back';
+  backBtn.innerHTML = '&times;';
+  backBtn.setAttribute('aria-label', 'Go back');
+  gate.appendChild(backBtn);
+
+  backBtn.addEventListener('click', function () {
+    if (history.length > 1) {
+      history.back();
+    } else {
+      location.href = 'index.html';
+    }
+  });
+
+  var form   = gate.querySelector('.guest-gate-form');
+  var input  = gate.querySelector('.guest-gate-input');
+  var error  = gate.querySelector('.guest-gate-error');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (input.value.trim().length > 0) {
+      sessionStorage.setItem(key, '1');
+      gate.remove();
+    } else {
+      error.textContent = 'Please enter a password.';
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initGuestGate);
